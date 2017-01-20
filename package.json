@@ -1,0 +1,38 @@
+{
+  "name": "sf-nights",
+  "version": "1.0.0",
+  "description": "##ERD ![alt tag](http://i.imgur.com/fEfGpTg.png)",
+  "main": "server.js",
+  "dependencies": {
+    "babelify": "^7.3.0",
+    "bcrypt": "^1.0.2",
+    "body-parser": "^1.16.0",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "mongoose": "^4.7.7",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify -t [ babelify --presets [ react ] ] public/scripts/auth/login_signup.js -o public/scripts/auth/bundle.js",
+    "buildit": "browserify -t [babelify] public/scripts/main/main.js > public/scripts/main/bundle.js",
+    "buildall":"npm run build buildit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vladyslavkuliani/SF-Nights.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vladyslavkuliani/SF-Nights/issues"
+  },
+  "homepage": "https://github.com/vladyslavkuliani/SF-Nights#readme"
+}
