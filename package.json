@@ -11,7 +11,9 @@
     "express-session": "^1.14.2",
     "mongoose": "^4.7.7",
     "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-dom": "^15.4.2",
+    "yelp": "^1.0.2",
+    "yelp-fusion": "^1.0.3"
   },
   "devDependencies": {
     "babel-core": "^6.21.0",
@@ -22,8 +24,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify -t [ babelify --presets [ react ] ] public/scripts/auth/login_signup.js -o public/scripts/auth/bundle.js",
-    "buildit": "browserify -t [babelify] public/scripts/main/main.js > public/scripts/main/bundle.js",
-    "buildall":"npm run build buildit"
+    "buildmain": "browserify -t [babelify] public/scripts/main/main.js > public/scripts/main/bundle.js",
+    "buildmap": "browserify -t [babelify] public/scripts/map/map.js > public/scripts/map/bundle.js"
   },
   "repository": {
     "type": "git",
