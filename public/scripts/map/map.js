@@ -3,6 +3,7 @@ var ReactDOM = require('react-dom');
 var PlacesList = require('../../components/places_list.js');
 
 var map;
+var markers = [];
 
 function initMap(){
   $.get('/position', function(position){
@@ -32,11 +33,15 @@ function populateMap() {
         var infoWindow = new google.maps.InfoWindow({content: content});
         marker.addListener('click', function(){
           infoWindow.open(map, marker);
-          window.scrollTo(0, index*120);
+          window.scrollTo(0, index*112);
+          document.getElementById(place.id);
+          $('.place-info').css('border', '2px solid black');
+          $('#'+place.id).css('border', '5px solid #00AF33');
         });
+        markers.push(marker);
       });
       console.log(nightClubs);
-    ReactDOM.render(<PlacesList places={nightClubs}/>,document.getElementById('places-list'));
+    ReactDOM.render(<PlacesList places={nightClubs} markers={markers}/>,document.getElementById('places-list'));
   });
 }
 

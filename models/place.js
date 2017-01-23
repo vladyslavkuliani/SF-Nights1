@@ -2,11 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var PlaceSchema = Schema({
-  name: String,
-  city: String,
-  lat: Number,
-  lng: Number,
-  zipCode: Number,
+  yelp_id: String,
+  hours: [Schema.Types.Mixed],
   visitors: [{
     type: Schema.Types.ObjectId,
     ref: 'UserPlace'

@@ -20305,28 +20305,33 @@ module.exports = traverseAllChildren;
 module.exports = require('./lib/React');
 
 },{"./lib/React":154}],177:[function(require,module,exports){
-"use strict";
+'use strict';
 
 var React = require('react');
 
 var PlacesList = React.createClass({
-  displayName: "PlacesList",
+  displayName: 'PlacesList',
+  triggerMarkerClick: function triggerMarkerClick(index) {
+    google.maps.event.trigger(this.props.markers[index], 'click');
+  },
   render: function render() {
     var places = this.props.places;
+    var thisComponent = this;
+
     var divPlaces = places.map(function (place, index) {
       return React.createElement(
-        "div",
-        { key: place.id, id: place.id, className: "place-info" },
-        React.createElement("img", { src: place.image_url, className: "club-img" }),
+        'div',
+        { key: place.id, id: place.id, className: 'place-info' },
+        React.createElement('img', { src: place.image_url, className: 'club-img', onClick: thisComponent.triggerMarkerClick.bind(thisComponent, index) }),
         React.createElement(
-          "span",
+          'span',
           null,
           place.name
         )
       );
     });
     return React.createElement(
-      "div",
+      'div',
       null,
       divPlaces
     );
@@ -20343,6 +20348,7 @@ var ReactDOM = require('react-dom');
 var PlacesList = require('../../components/places_list.js');
 
 var map;
+var markers = [];
 
 function initMap() {
   $.get('/position', function (position) {
@@ -20372,11 +20378,15 @@ function populateMap() {
       var infoWindow = new google.maps.InfoWindow({ content: content });
       marker.addListener('click', function () {
         infoWindow.open(map, marker);
-        window.scrollTo(0, index * 120);
+        window.scrollTo(0, index * 112);
+        document.getElementById(place.id);
+        $('.place-info').css('border', '2px solid black');
+        $('#' + place.id).css('border', '5px solid #00AF33');
       });
+      markers.push(marker);
     });
     console.log(nightClubs);
-    ReactDOM.render(React.createElement(PlacesList, { places: nightClubs }), document.getElementById('places-list'));
+    ReactDOM.render(React.createElement(PlacesList, { places: nightClubs, markers: markers }), document.getElementById('places-list'));
   });
 }
 

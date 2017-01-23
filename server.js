@@ -11,6 +11,7 @@ var currentUserLocation = {
   "lng": null
 }
 
+
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({
@@ -40,6 +41,8 @@ app.get('/', function(req, res){
     res.redirect('/profile');
   }
   else{
+    currentUser["lat"] = null;
+    currentUser["lng"] = null;
     res.sendFile(__dirname + '/views/login_signup.html');
   }
 });
@@ -106,8 +109,24 @@ app.get("/getyelpdata", function(req,res){
       latitude: currentUserLocation["lat"],
       longitude: currentUserLocation["lng"],
       radius: 7000,
-      limit:45
+      limit:5
     }).then(response => {
+      response.jsonBody.businesses.forEach(function(place){
+        db.Place.findOne({yelp_id: place.id}, function(err, foundPlace){
+          if(!foundPlace){
+            client.business(place.id).then(detailedInfoPlace => {
+              var newPlace = new db.Place({
+                yelp_id: place.id,
+                hours: detailedInfoPlace.jsonBody["hours"]
+              });
+              newPlace.save();
+            }).catch(e => {
+              console.log(e);
+            });
+
+          }
+        });
+      });
       res.json(response)
     });
   }).catch(e => {
