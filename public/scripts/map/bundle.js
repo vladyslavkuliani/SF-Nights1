@@ -20353,13 +20353,13 @@ var markers = [];
 function initMap() {
   $.get('/position', function (position) {
     map = new google.maps.Map(document.getElementById('map'), {
-      center: { lat: parseFloat(position.lat), lng: parseFloat(position.lng) },
+      center: { lat: 37.773972, lng: -122.431297 },
       zoom: 12
     });
-
+    // parseFloat(position.lat) parseFloat(position.lng)
     var infoWindow = new google.maps.InfoWindow({ map: map });
 
-    infoWindow.setPosition({ lat: parseFloat(position.lat), lng: parseFloat(position.lng) });
+    infoWindow.setPosition({ lat: 37.773972, lng: -122.431297 });
     infoWindow.setContent('Location found.');
   });
 }
@@ -20367,10 +20367,23 @@ function initMap() {
 function populateMap() {
   var nightClubs = [];
   var currentPost;
+  var isCurrentPlaceOpen;
 
   $.get('/getyelpdata', function (places) {
+    console.log(places);
     nightClubs = places.jsonBody.businesses;
     nightClubs.forEach(function (place, index) {
+      $.ajax({
+        method: 'POST',
+        url: '/findorcreate',
+        data: { id: place.id },
+        dataType: 'json',
+        async: false,
+        success: function success(club) {
+          isCurrentPlaceOpen = club.is_open_now;
+        }
+      });
+
       var marker = new google.maps.Marker({
         position: new google.maps.LatLng(place.coordinates.latitude, place.coordinates.longitude),
         map: map
@@ -20387,9 +20400,8 @@ function populateMap() {
         }
       });
 
-      console.log(currentPost);
+      var content = '<div class="row info-marker"><div class="col-md-9"><h4> ' + place.name + '</h4>' + "Tonight's rating: <strong>" + currentPost.rating + "</strong> | <strong>" + currentPost.votes.length + "</strong> votes<br>" + place.location.display_address[0] + ", " + place.location.display_address[1] + '</div>' + '<div class="col-md-3">' + '<div>' + (place.distance / 1000).toFixed(2) + 'km</div>' + '<div>' + place.price + '</div>' + '<span class="isOpen">' + isCurrentPlaceOpen + '</span>' + '</div>' + '</div>';
 
-      var content = '<h2>' + place.name + '</h2><br>Price: ' + place.price + "Tonight's rating: " + currentPost.rating + "/" + currentPost.votes.length + " votes";
       var infoWindow = new google.maps.InfoWindow({ content: content });
       marker.addListener('click', function () {
         infoWindow.open(map, marker);

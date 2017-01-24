@@ -29,3 +29,11 @@ body{
   margin-left: 5%;
   border: 2px solid black;
 }
+
+.info-marker{
+  width: 300px;
+}
+
+h4{
+  margin: 0;
+}

@@ -10,6 +10,7 @@ var currentUserLocation = {
   "lat": null,
   "lng": null
 }
+var client;
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended: true}));
@@ -99,50 +100,52 @@ app.get("/places", function(req,res){
 });
 
 app.get("/getyelpdata", function(req,res){
-  var allCurrentPosts = [];
-
   yelp.accessToken("zlyKmaUcKVM3dc3lQQjfjQ", "xq4eOIaI6Lqupx1X0WYi5JD0ZuHm4VQLlpxxBMGT93btB7AQ86csvScdMD2yLC2d").then(response => {
-    const client = yelp.client(response.jsonBody.access_token);
+    client = yelp.client(response.jsonBody.access_token);
 
     client.search({
       term:'Night clubs',
       location: 'san francisco, ca',
-      latitude: currentUserLocation["lat"],
-      longitude: currentUserLocation["lng"],
+      // latitude: currentUserLocation["lat"],
+      // longitude: currentUserLocation["lng"],
       radius: 7000,
-      limit:5
+      limit:6
     }).then(response => {
-      response.jsonBody.businesses.forEach(function(place){
-        //find the places in the database, if it's not there - create it and fill with additional information
-        db.Place.findOne({yelp_id: place.id}, function(err, foundPlace){
-          if(!foundPlace){
-            client.business(place.id).then(detailedInfoPlace => {
-              var newPlace = new db.Place({
-                yelp_id: place.id,
-                hours: detailedInfoPlace.jsonBody["hours"],
-                currentPost: null
-              });
-
-              var newPost = new db.Post({
-                date: new Date(),
-                rating: 0,
-                placeId: newPlace._id
-              });
-              newPlace.currentPost = newPost._id;
-
-              newPlace.save();
-              newPost.save();
-            }).catch(e => {
-              console.log(e);
-            });
-          }
-        });
-      });
-
       res.json(response);
     });
   }).catch(e => {
     console.log(e);
+  });
+});
+
+app.post('/findorcreate', function(req,res){
+  db.Place.findOne({yelp_id: req.body.id}, function(err, foundPlace){
+    if(!foundPlace){
+      client.business(req.body.id).then(function(detailedInfoPlace){
+        var newPlace = new db.Place({
+          yelp_id: req.body.id,
+          is_open_now: detailedInfoPlace.jsonBody["hours"][0].is_open_now,
+          currentPost: null
+        });
+        newPlace.save();
+
+        var newPost = new db.Post({
+            date: new Date(),
+            rating: 0,
+            placeId: newPlace._id
+        });
+        newPost.save();
+
+        newPlace.currentPost = newPost._id;
+        newPlace.save();
+        res.json(newPlace);
+      }).catch(e => {
+        console.log(e);
+      });
+    }
+    else{
+      res.json(foundPlace);
+    }
   });
 });
 

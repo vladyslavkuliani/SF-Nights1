@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var PlaceSchema = Schema({
   yelp_id: String,
-  hours: [Schema.Types.Mixed],
+  is_open_now: Boolean,
   visitors: [{
     type: Schema.Types.ObjectId,
     ref: 'UserPlace'

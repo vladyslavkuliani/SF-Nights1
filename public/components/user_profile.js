@@ -14,17 +14,19 @@ var UserProfile = React.createClass({
 
   render(){
     const Fn = this
-    $.get('/position', (pos)=>{
-      if(!pos.lat){
-        navigator.geolocation.getCurrentPosition(function(position){
-          $.get('/setcurrentlocation', {lat:position.coords.latitude, lng:position.coords.longitude});
-          Fn.setState({gotLocationData: true});
-        });
-      }
-      else{
-        Fn.setState({gotLocationData: true});
-      }
-    });
+    // $.get('/position', (pos)=>{
+    //   if(!pos.lat){
+    //     console.log("HERE!!!!");
+    //     navigator.geolocation.getCurrentPosition(function(position){
+    //       console.log(position);
+    //       $.get('/setcurrentlocation', {lat:position.coords.latitude, lng:position.coords.longitude});
+    //       Fn.setState({gotLocationData: true});
+    //     });
+    //   }
+    //   else{
+    //     Fn.setState({gotLocationData: true});
+    //   }
+    // });
 
     return (
       <div className="user-profile">
