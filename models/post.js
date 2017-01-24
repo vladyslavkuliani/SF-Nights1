@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 
 var PostSchema = Schema({
   date: Date,
+  votes: [Number],
   rating: Number,
   placeId: {
     type: Schema.Types.ObjectId,

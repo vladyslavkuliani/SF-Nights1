@@ -11,7 +11,6 @@ var currentUserLocation = {
   "lng": null
 }
 
-
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({
@@ -100,6 +99,8 @@ app.get("/places", function(req,res){
 });
 
 app.get("/getyelpdata", function(req,res){
+  var allCurrentPosts = [];
+
   yelp.accessToken("zlyKmaUcKVM3dc3lQQjfjQ", "xq4eOIaI6Lqupx1X0WYi5JD0ZuHm4VQLlpxxBMGT93btB7AQ86csvScdMD2yLC2d").then(response => {
     const client = yelp.client(response.jsonBody.access_token);
 
@@ -112,25 +113,44 @@ app.get("/getyelpdata", function(req,res){
       limit:5
     }).then(response => {
       response.jsonBody.businesses.forEach(function(place){
+        //find the places in the database, if it's not there - create it and fill with additional information
         db.Place.findOne({yelp_id: place.id}, function(err, foundPlace){
           if(!foundPlace){
             client.business(place.id).then(detailedInfoPlace => {
               var newPlace = new db.Place({
                 yelp_id: place.id,
-                hours: detailedInfoPlace.jsonBody["hours"]
+                hours: detailedInfoPlace.jsonBody["hours"],
+                currentPost: null
               });
+
+              var newPost = new db.Post({
+                date: new Date(),
+                rating: 0,
+                placeId: newPlace._id
+              });
+              newPlace.currentPost = newPost._id;
+
               newPlace.save();
+              newPost.save();
             }).catch(e => {
               console.log(e);
             });
-
           }
         });
       });
-      res.json(response)
+
+      res.json(response);
     });
   }).catch(e => {
     console.log(e);
+  });
+});
+
+app.get('/getpost', function(req, res){
+  db.Place.findOne({yelp_id: req.query.clubId}, function(err, place){
+    db.Post.findOne({_id: place.currentPost}, function(err, post){
+      res.json(post);
+    })
   });
 });
 

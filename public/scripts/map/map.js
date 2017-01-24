@@ -21,15 +21,30 @@ function initMap(){
 
 function populateMap() {
   var nightClubs = [];
+  var currentPost;
+
   $.get('/getyelpdata', function(places){
     nightClubs = places.jsonBody.businesses;
-    places.jsonBody.businesses.forEach(function(place, index){
+    nightClubs.forEach(function(place, index){
       var marker = new google.maps.Marker({
                position: new google.maps.LatLng(place.coordinates.latitude, place.coordinates.longitude),
                map: map
         });
 
-        var content = '<img src=' + place.image_url + ' class="club-img"/><h2>'+place.name+'</h2><br>Price: '+place.price;
+        $.ajax({
+          method: 'GET',
+          url: '/getpost',
+          data: {clubId: place.id},
+          dataType: 'json',
+          async: false,
+          success: function(post){
+            currentPost = post;
+          }
+        });
+
+        console.log(currentPost);
+
+        var content = '<div class="row"><div class="col-md-10"><h2>'+'</div>' + '<div class="col-md-3">' +'</div>'+ '</div>' + '<h2>' + place.name+'</h2><br>Price: '+place.price+"Tonight's rating: " + currentPost.rating + "/" + currentPost.votes.length +" votes" + '</div>';
         var infoWindow = new google.maps.InfoWindow({content: content});
         marker.addListener('click', function(){
           infoWindow.open(map, marker);
@@ -41,7 +56,7 @@ function populateMap() {
         markers.push(marker);
       });
       console.log(nightClubs);
-    ReactDOM.render(<PlacesList places={nightClubs} markers={markers}/>,document.getElementById('places-list'));
+    ReactDOM.render(<PlacesList places={nightClubs} markers={markers}/>, document.getElementById('places-list'));
   });
 }
 
