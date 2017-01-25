@@ -109,7 +109,7 @@ app.get("/getyelpdata", function(req,res){
       // latitude: currentUserLocation["lat"],
       // longitude: currentUserLocation["lng"],
       radius: 7000,
-      limit:10
+      limit:2
     }).then(response => {
       res.json(response);
     });

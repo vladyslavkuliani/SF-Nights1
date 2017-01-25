@@ -28,6 +28,7 @@ var UserProfile = React.createClass({
     return (
       <div>
         <Header/>
+        <div className="empty-div"></div>
         <div className="user-profile">
           <p>{this.props.user.name}</p>
           <p>{this.props.user.dob}</p>

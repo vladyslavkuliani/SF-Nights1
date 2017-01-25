@@ -20344,7 +20344,7 @@ var Header = React.createClass({
   render: function render() {
     return React.createElement(
       "div",
-      { className: "row header" },
+      { className: "header" },
       React.createElement(
         "div",
         { className: "menu-option", onClick: this.home.bind(this) },
@@ -20405,6 +20405,7 @@ var UserProfile = _react2.default.createClass({
       'div',
       null,
       _react2.default.createElement(Header, null),
+      _react2.default.createElement('div', { className: 'empty-div' }),
       _react2.default.createElement(
         'div',
         { className: 'user-profile' },

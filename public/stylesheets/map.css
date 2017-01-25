@@ -1,7 +1,3 @@
-body{
-  background: #f5f8fa;
-}
-
 #map{
   height: 92vh;
   width: 50%;
@@ -13,6 +9,7 @@ body{
 
 #places-list{
     margin-left: 50%;
+    margin-top: 70px;
 }
 
 .club-img{
@@ -77,40 +74,4 @@ h4{
 
 .place-address{
   margin-bottom: 12px;
-}
-
-.header{
-  height: 60px;
-  background: #FFDB19;
-  z-index: 5 !important;
-}
-
-.menu-option{
-  float:left;
-  padding: 10px 30px;
-  color: black;
-  font-size: 24px;
-  height: 100%;
-  font-weight: bold;
-}
-
-.menu-option:hover{
-  background: black;
-  color: white;
-  cursor: pointer;
-}
-
-.menu-option-logout{
-  float:right;
-  padding: 10px 30px;
-  color: black;
-  font-size: 24px;
-  height: 100%;
-  font-weight: bold;
-}
-
-.menu-option-logout:hover{
-  background: black;
-  color: white;
-  cursor: pointer;
 }

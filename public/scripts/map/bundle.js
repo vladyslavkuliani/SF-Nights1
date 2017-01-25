@@ -20323,7 +20323,7 @@ var Header = React.createClass({
   render: function render() {
     return React.createElement(
       "div",
-      { className: "row header" },
+      { className: "header" },
       React.createElement(
         "div",
         { className: "menu-option", onClick: this.home.bind(this) },
