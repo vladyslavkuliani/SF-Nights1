@@ -1,13 +1,13 @@
 body{
-  background: #2c3338;
+  background: #f5f8fa;
 }
 
 #map{
-  height: 100vh;
+  height: 92vh;
   width: 50%;
   float: left;
   position: fixed !important;
-  top: 0;
+  top: 60px;
   left: 0;
 }
 
@@ -22,12 +22,14 @@ body{
 }
 
 .place-info{
-  height: 100px;
+  height: 105px;
   width: 90%;
   background: white;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  margin-top: 15px;
   margin-left: 5%;
-  border: 2px solid black;
+  border: 1px solid #DCDCDC;
+  border-radius: 2px;
 }
 
 .info-marker{
@@ -36,4 +38,79 @@ body{
 
 h4{
   margin: 0;
+}
+
+.green-text{
+  color: green;
+}
+
+.red-text{
+  color: red;
+}
+
+.club-name h4{
+    margin-top: 5px;
+}
+
+.yelp-img{
+  height: 30px;
+  width: 50px;
+}
+
+.distance{
+  text-align: right;
+}
+
+.price{
+  text-align: right;
+}
+
+.yelp-rating{
+  width: 100px;
+  height: 20px;
+}
+
+.yelp-info-rating{
+  margin-top: 35px;
+  text-align: right;
+}
+
+.place-address{
+  margin-bottom: 12px;
+}
+
+.header{
+  height: 60px;
+  background: #FFDB19;
+  z-index: 5 !important;
+}
+
+.menu-option{
+  float:left;
+  padding: 10px 30px;
+  color: black;
+  font-size: 24px;
+  height: 100%;
+  font-weight: bold;
+}
+
+.menu-option:hover{
+  background: black;
+  color: white;
+  cursor: pointer;
+}
+
+.menu-option-logout{
+  float:right;
+  padding: 10px 30px;
+  color: black;
+  font-size: 24px;
+  height: 100%;
+  font-weight: bold;
+}
+
+.menu-option-logout:hover{
+  background: black;
+  color: white;
+  cursor: pointer;
 }

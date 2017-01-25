@@ -109,7 +109,7 @@ app.get("/getyelpdata", function(req,res){
       // latitude: currentUserLocation["lat"],
       // longitude: currentUserLocation["lng"],
       radius: 7000,
-      limit:6
+      limit:2
     }).then(response => {
       res.json(response);
     });
@@ -120,32 +120,34 @@ app.get("/getyelpdata", function(req,res){
 
 app.post('/findorcreate', function(req,res){
   db.Place.findOne({yelp_id: req.body.id}, function(err, foundPlace){
-    if(!foundPlace){
       client.business(req.body.id).then(function(detailedInfoPlace){
-        var newPlace = new db.Place({
-          yelp_id: req.body.id,
-          is_open_now: detailedInfoPlace.jsonBody["hours"][0].is_open_now,
-          currentPost: null
-        });
-        newPlace.save();
+          if(!foundPlace){
+            var newPlace = new db.Place({
+              yelp_id: req.body.id,
+              is_open_now: detailedInfoPlace.jsonBody["hours"][0].is_open_now,
+              currentPost: null
+            });
+            newPlace.save();
 
-        var newPost = new db.Post({
-            date: new Date(),
-            rating: 0,
-            placeId: newPlace._id
-        });
-        newPost.save();
+            var newPost = new db.Post({
+                date: new Date(),
+                rating: 0,
+                placeId: newPlace._id
+            });
+            newPost.save();
 
-        newPlace.currentPost = newPost._id;
-        newPlace.save();
-        res.json(newPlace);
+            newPlace.currentPost = newPost._id;
+            newPlace.save();
+            res.json(newPlace);
+        }
+        else{
+          foundPlace.is_open_now = detailedInfoPlace.jsonBody["hours"][0].is_open_now;
+          foundPlace.save();
+          res.json(foundPlace);
+        }
       }).catch(e => {
         console.log(e);
       });
-    }
-    else{
-      res.json(foundPlace);
-    }
   });
 });
 
@@ -155,6 +157,16 @@ app.get('/getpost', function(req, res){
       res.json(post);
     })
   });
+});
+
+app.get('/places/:id', function(req, res){
+  res.sendFile(__dirname + '/views/clubPage.html');
+});
+
+app.get('/getplace', function(req, res){
+    client.business(req.query.id).then(function(place){
+      res.json(place);
+    });
 });
 
 var server = app.listen(process.env.PORT || 3000)

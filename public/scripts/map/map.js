@@ -1,5 +1,6 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var Header = require('../../components/header.js');
 var PlacesList = require('../../components/places_list.js');
 
 var map;
@@ -61,24 +62,30 @@ function populateMap() {
         place.location.display_address[0] + ", " + place.location.display_address[1] +
         '</div>' +
         '<div class="col-md-3">' + '<div>' +(place.distance/1000).toFixed(2)+ 'km</div>' +
-        '<div>' + place.price +'</div>' +
-        '<span class="isOpen">'+isCurrentPlaceOpen+'</span>'+'</div>' +
-        '</div>'
+        '<div>' + place.price +'</div>';
+        if(isCurrentPlaceOpen){
+          content += '<span class="isOpen green-text"><strong>Open<strong></span>'+'</div>' + '</div>';
+        }
+        else{
+          content += '<span class="isOpen red-text"><strong>Closed</strong></span>'+'</div>' + '</div>';
+        }
 
         var infoWindow = new google.maps.InfoWindow({content: content});
         marker.addListener('click', function(){
           infoWindow.open(map, marker);
           window.scrollTo(0, index*112);
           document.getElementById(place.id);
-          $('.place-info').css('border', '2px solid black');
-          $('#'+place.id).css('border', '5px solid #00AF33');
+          $('.place-info').css('border', '1px solid #DCDCDC');
+          $('#'+place.id).css('border', '3px solid #00AF33');
         });
         markers.push(marker);
       });
       console.log(nightClubs);
-    ReactDOM.render(<PlacesList places={nightClubs} markers={markers}/>, document.getElementById('places-list'));
+    ReactDOM.render(<PlacesList places={nightClubs} currentPost={currentPost} markers={markers}/>, document.getElementById('places-list'));
   });
 }
 
+
 initMap();
+ReactDOM.render(<Header />, document.getElementById('header'));
 populateMap();

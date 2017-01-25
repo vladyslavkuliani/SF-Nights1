@@ -25,7 +25,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify -t [ babelify --presets [ react ] ] public/scripts/auth/login_signup.js -o public/scripts/auth/bundle.js",
     "buildmain": "browserify -t [babelify] public/scripts/main/main.js > public/scripts/main/bundle.js",
-    "buildmap": "browserify -t [babelify] public/scripts/map/map.js > public/scripts/map/bundle.js"
+    "buildmap": "browserify -t [babelify] public/scripts/map/map.js > public/scripts/map/bundle.js",
+    "buildclub": "browserify -t [babelify] public/scripts/club/club.js > public/scripts/club/bundle.js"
   },
   "repository": {
     "type": "git",

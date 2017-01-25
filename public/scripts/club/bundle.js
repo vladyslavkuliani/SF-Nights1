@@ -20348,230 +20348,56 @@ module.exports = Header;
 },{"react":176}],178:[function(require,module,exports){
 'use strict';
 
-var React = require('react');
+var _react = require('react');
 
-var PlacesList = React.createClass({
-  displayName: 'PlacesList',
-  triggerMarkerClick: function triggerMarkerClick(index) {
-    google.maps.event.trigger(this.props.markers[index], 'click');
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Header = require('./header.js');
+
+var PlacePage = _react2.default.createClass({
+  displayName: 'PlacePage',
+  getInitialState: function getInitialState() {
+    return {
+      gotPlace: false,
+      place: null
+    };
   },
-  displayRating: function displayRating(rating) {
-    switch (rating) {
-      case 0:
-        return "http://i.imgur.com/5ktFDB2.png?1";
-        break;
-      case 1:
-        return "http://i.imgur.com/HfXPE6h.png?1";
-        break;
-      case 1.5:
-        return "http://i.imgur.com/BdPATR0.png?1";
-        break;
-      case 2:
-        return "http://i.imgur.com/fhe4nBv.png?1";
-        break;
-      case 2.5:
-        return "http://i.imgur.com/FK6dOTV.png?1";
-        break;
-      case 3:
-        return "http://i.imgur.com/UdAhu3g.png?1";
-        break;
-      case 3.5:
-        return "http://i.imgur.com/clsy5Lc.png?1";
-        break;
-      case 4:
-        return "http://i.imgur.com/bAyZslg.png?1";
-        break;
-      case 4.5:
-        return "http://i.imgur.com/aHjzjPu.png?1";
-        break;
-      case 5:
-        return "http://i.imgur.com/P9Yp9Uv.png?1";
-        break;
-    }
-  },
-  goToPage: function goToPage(id) {
-    window.location.replace('/places/' + id);
+  componentDidMount: function componentDidMount() {
+    var arrUrl = window.location.href.split("/");
+    var id = arrUrl[arrUrl.length - 1];
+    var thisComponent = this;
+    $.get("/getplace", { id: id }).then(function (place) {
+      thisComponent.setState({ place: place, gotPlace: true });
+    });
   },
   render: function render() {
-    var places = this.props.places;
-    var thisComponent = this;
-
-    var divPlaces = places.map(function (place, index) {
-      return React.createElement(
-        'div',
-        { key: place.id, id: place.id, className: 'place-info row' },
-        React.createElement('img', { src: place.image_url, className: 'club-img pull-left', onClick: thisComponent.triggerMarkerClick.bind(thisComponent, index) }),
-        React.createElement(
-          'div',
-          { className: 'col-md-6 club-name' },
-          React.createElement(
-            'h4',
-            null,
-            React.createElement(
-              'a',
-              { href: '#', onClick: thisComponent.goToPage.bind(thisComponent, place.id) },
-              place.name
-            )
-          ),
-          React.createElement(
-            'span',
-            null,
-            'Rating tonight: ',
-            React.createElement(
-              'strong',
-              null,
-              thisComponent.props.currentPost.rating
-            ),
-            ' | ',
-            React.createElement(
-              'strong',
-              null,
-              thisComponent.props.currentPost.votes.length
-            ),
-            ' votes'
-          ),
-          React.createElement('hr', null),
-          React.createElement(
-            'div',
-            { className: 'place-address' },
-            React.createElement(
-              'span',
-              null,
-              place.location.display_address[0],
-              ' '
-            ),
-            React.createElement(
-              'span',
-              null,
-              place.location.display_address[1]
-            )
-          )
-        ),
-        React.createElement(
-          'div',
-          { className: 'col-md-4 yelp-info' },
-          React.createElement(
-            'div',
-            { className: 'distance' },
-            React.createElement(
-              'span',
-              { className: 'distance-details' },
-              (place.distance / 1000).toFixed(2),
-              ' km'
-            )
-          ),
-          React.createElement(
-            'div',
-            { className: 'price' },
-            place.price
-          ),
-          React.createElement(
-            'div',
-            { className: 'yelp-info-rating' },
-            React.createElement('img', { src: 'http://i.imgur.com/dgw2qWS.png', className: 'yelp-img' }),
-            React.createElement('img', { src: thisComponent.displayRating(place.rating), className: 'yelp-rating' })
-          )
-        )
-      );
-    });
-    return React.createElement(
+    return _react2.default.createElement(
       'div',
       null,
-      divPlaces
+      _react2.default.createElement(Header, null),
+      this.state.gotPlace && _react2.default.createElement(
+        'h1',
+        null,
+        this.state.place.jsonBody.name
+      )
     );
   }
 });
 
-module.exports = PlacesList;
+module.exports = PlacePage;
 
-},{"react":176}],179:[function(require,module,exports){
+},{"./header.js":177,"react":176}],179:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-var Header = require('../../components/header.js');
-var PlacesList = require('../../components/places_list.js');
+var PlacePage = require('../../components/place_page.js');
 
-var map;
-var markers = [];
+ReactDOM.render(React.createElement(PlacePage, null), document.getElementById('place'));
 
-function initMap() {
-  $.get('/position', function (position) {
-    map = new google.maps.Map(document.getElementById('map'), {
-      center: { lat: 37.773972, lng: -122.431297 },
-      zoom: 12
-    });
-    // parseFloat(position.lat) parseFloat(position.lng)
-    var infoWindow = new google.maps.InfoWindow({ map: map });
-
-    infoWindow.setPosition({ lat: 37.773972, lng: -122.431297 });
-    infoWindow.setContent('Location found.');
-  });
-}
-
-function populateMap() {
-  var nightClubs = [];
-  var currentPost;
-  var isCurrentPlaceOpen;
-
-  $.get('/getyelpdata', function (places) {
-    console.log(places);
-    nightClubs = places.jsonBody.businesses;
-    nightClubs.forEach(function (place, index) {
-      $.ajax({
-        method: 'POST',
-        url: '/findorcreate',
-        data: { id: place.id },
-        dataType: 'json',
-        async: false,
-        success: function success(club) {
-          isCurrentPlaceOpen = club.is_open_now;
-        }
-      });
-
-      var marker = new google.maps.Marker({
-        position: new google.maps.LatLng(place.coordinates.latitude, place.coordinates.longitude),
-        map: map
-      });
-
-      $.ajax({
-        method: 'GET',
-        url: '/getpost',
-        data: { clubId: place.id },
-        dataType: 'json',
-        async: false,
-        success: function success(post) {
-          currentPost = post;
-        }
-      });
-
-      var content = '<div class="row info-marker"><div class="col-md-9"><h4> ' + place.name + '</h4>' + "Tonight's rating: <strong>" + currentPost.rating + "</strong> | <strong>" + currentPost.votes.length + "</strong> votes<br>" + place.location.display_address[0] + ", " + place.location.display_address[1] + '</div>' + '<div class="col-md-3">' + '<div>' + (place.distance / 1000).toFixed(2) + 'km</div>' + '<div>' + place.price + '</div>';
-      if (isCurrentPlaceOpen) {
-        content += '<span class="isOpen green-text"><strong>Open<strong></span>' + '</div>' + '</div>';
-      } else {
-        content += '<span class="isOpen red-text"><strong>Closed</strong></span>' + '</div>' + '</div>';
-      }
-
-      var infoWindow = new google.maps.InfoWindow({ content: content });
-      marker.addListener('click', function () {
-        infoWindow.open(map, marker);
-        window.scrollTo(0, index * 112);
-        document.getElementById(place.id);
-        $('.place-info').css('border', '1px solid #DCDCDC');
-        $('#' + place.id).css('border', '3px solid #00AF33');
-      });
-      markers.push(marker);
-    });
-    console.log(nightClubs);
-    ReactDOM.render(React.createElement(PlacesList, { places: nightClubs, currentPost: currentPost, markers: markers }), document.getElementById('places-list'));
-  });
-}
-
-initMap();
-ReactDOM.render(React.createElement(Header, null), document.getElementById('header'));
-populateMap();
-
-},{"../../components/header.js":177,"../../components/places_list.js":178,"react":176,"react-dom":25}],180:[function(require,module,exports){
+},{"../../components/place_page.js":178,"react":176,"react-dom":25}],180:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
