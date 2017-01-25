@@ -24,6 +24,7 @@ function populateMap() {
   var nightClubs = [];
   var currentPost;
   var isCurrentPlaceOpen;
+  var content;
 
   $.get('/getyelpdata', function(places){
     console.log(places);
@@ -34,7 +35,7 @@ function populateMap() {
         url: '/findorcreate',
         data: {id: place.id},
         dataType: 'json',
-        async: false,
+        async: true,
         success: function(club){
           isCurrentPlaceOpen = club.is_open_now;
         }
@@ -53,22 +54,21 @@ function populateMap() {
           async: false,
           success: function(post){
             currentPost = post;
+            console.log(post);
+            content = '<div class="row info-marker"><div class="col-md-9"><h4> '+place.name+'</h4>' +
+            "Tonight's rating: <strong>" + post.rating + "</strong> | <strong>" + post.votes.length +"</strong> votes<br>" +
+            place.location.display_address[0] + ", " + place.location.display_address[1] +
+            '</div>' +
+            '<div class="col-md-3">' + '<div>' +(place.distance/1000).toFixed(2)+ 'km</div>' +
+            '<div>' + place.price +'</div>';
+            if(isCurrentPlaceOpen){
+              content += '<span class="isOpen green-text"><strong>Open<strong></span>'+'</div>' + '</div>';
+            }
+            else{
+              content += '<span class="isOpen red-text"><strong>Closed</strong></span>'+'</div>' + '</div>';
+            }
           }
         });
-
-
-        var content = '<div class="row info-marker"><div class="col-md-9"><h4> '+place.name+'</h4>' +
-        "Tonight's rating: <strong>" + currentPost.rating + "</strong> | <strong>" + currentPost.votes.length +"</strong> votes<br>" +
-        place.location.display_address[0] + ", " + place.location.display_address[1] +
-        '</div>' +
-        '<div class="col-md-3">' + '<div>' +(place.distance/1000).toFixed(2)+ 'km</div>' +
-        '<div>' + place.price +'</div>';
-        if(isCurrentPlaceOpen){
-          content += '<span class="isOpen green-text"><strong>Open<strong></span>'+'</div>' + '</div>';
-        }
-        else{
-          content += '<span class="isOpen red-text"><strong>Closed</strong></span>'+'</div>' + '</div>';
-        }
 
         var infoWindow = new google.maps.InfoWindow({content: content});
         marker.addListener('click', function(){
