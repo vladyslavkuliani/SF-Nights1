@@ -20387,19 +20387,18 @@ var UserProfile = _react2.default.createClass({
   },
   render: function render() {
     var Fn = this;
-    // $.get('/position', (pos)=>{
-    //   if(!pos.lat){
-    //     console.log("HERE!!!!");
-    //     navigator.geolocation.getCurrentPosition(function(position){
-    //       console.log(position);
-    //       $.get('/setcurrentlocation', {lat:position.coords.latitude, lng:position.coords.longitude});
-    //       Fn.setState({gotLocationData: true});
-    //     });
-    //   }
-    //   else{
-    //     Fn.setState({gotLocationData: true});
-    //   }
-    // });
+    $.get('/position', function (pos) {
+      if (!pos.lat) {
+        console.log("HERE!!!!");
+        navigator.geolocation.getCurrentPosition(function (position) {
+          console.log(position);
+          $.get('/setcurrentlocation', { lat: position.coords.latitude, lng: position.coords.longitude });
+          Fn.setState({ gotLocationData: true });
+        });
+      } else {
+        Fn.setState({ gotLocationData: true });
+      }
+    });
 
     return _react2.default.createElement(
       'div',
@@ -20410,14 +20409,9 @@ var UserProfile = _react2.default.createClass({
         'div',
         { className: 'user-profile' },
         _react2.default.createElement(
-          'p',
+          'h1',
           null,
           this.props.user.name
-        ),
-        _react2.default.createElement(
-          'p',
-          null,
-          this.props.user.dob
         ),
         this.state.gotLocationData && _react2.default.createElement(BrowsePlacesLink, null)
       )

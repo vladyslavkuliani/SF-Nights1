@@ -20388,9 +20388,15 @@ var React = require('react');
 
 var NewCommentForm = React.createClass({
   displayName: "NewCommentForm",
+  getInitialState: function getInitialState() {
+    return {
+      rerender: true
+    };
+  },
+  forceRerender: function forceRerender() {
+    this.setState({ rerender: !this.state.rerender });
+  },
   render: function render() {
-    var _this = this;
-
     return React.createElement(
       "div",
       { className: "card col-md-8 col-md-offset-2 new-comment" },
@@ -20449,14 +20455,12 @@ var NewCommentForm = React.createClass({
           React.createElement(
             "div",
             { className: "form-group" },
-            React.createElement("textarea", { className: "form-control", id: "exampleTextarea", rows: "3", name: "comment" })
+            React.createElement("textarea", { className: "form-control", id: "exampleTextarea", rows: "3", name: "comment", isRequired: true })
           )
         ),
         React.createElement(
           "a",
-          { href: "#", className: "btn btn-primary", onClick: function onClick() {
-              _this.props.handlePost();
-            } },
+          { href: "#", className: "btn btn-primary", onClick: this.props.handlePost },
           "Post comment"
         )
       )
@@ -20497,7 +20501,7 @@ var PlaceInfo = React.createClass({
         null,
         place.name
       ),
-      this.state.gotPost && React.createElement(
+      this.props.isOpenNow && this.state.gotPost && React.createElement(
         "span",
         { className: "rating-tonight" },
         "Rating tonight: ",
@@ -20514,12 +20518,16 @@ var PlaceInfo = React.createClass({
         ),
         " votes"
       ),
-      React.createElement(
-        "button",
-        { className: "btn m-b-xs w-xs btn-dark", onClick: function onClick() {
-            _this.props.leaveComment();
-          } },
-        "Comment"
+      this.props.isOpenNow && React.createElement(
+        "div",
+        { className: "comment-btn" },
+        React.createElement(
+          "button",
+          { className: "btn m-b-xs w-xs btn-dark", onClick: function onClick() {
+              _this.props.leaveComment();
+            } },
+          "Comment"
+        )
       )
     );
   }
@@ -20551,7 +20559,8 @@ var PlacePage = _react2.default.createClass({
       gotPlace: false,
       place: null,
       is_open_now: false,
-      newComment: false
+      newComment: false,
+      updateComments: true
     };
   },
   componentDidMount: function componentDidMount() {
@@ -20572,7 +20581,8 @@ var PlacePage = _react2.default.createClass({
     var data = $(".feedback-form").serialize();
     data += "&id=" + this.state.place.jsonBody.id;
     $.post('/leavecomment', data, function (response) {
-      thisComponent.setState({ newComment: false });
+      thisComponent.setState({ newComment: false, updateComments: false });
+      thisComponent.setState({ updateComments: true });
     });
   },
 
@@ -20598,9 +20608,9 @@ var PlacePage = _react2.default.createClass({
       _react2.default.createElement(Header, null),
       _react2.default.createElement('div', { className: 'empty-div' }),
       _react2.default.createElement(AdditionalNavigation, null),
-      this.state.gotPlace && _react2.default.createElement(PlaceInfo, { place: this.state.place.jsonBody, leaveComment: this.leaveComment.bind(this), getPostData: this.getPostData.bind(this) }),
+      this.state.gotPlace && this.state.updateComments && _react2.default.createElement(PlaceInfo, { isOpenNow: this.state.is_open_now, place: this.state.place.jsonBody, leaveComment: this.leaveComment.bind(this), getPostData: this.getPostData.bind(this) }),
       this.state.newComment && _react2.default.createElement(NewCommentForm, { place: this.state.place.jsonBody, handlePost: this.handleOnPostComment.bind(this) }),
-      this.state.is_open_now && _react2.default.createElement(PostInfo, { place: this.state.place.jsonBody }) || _react2.default.createElement(SorryMessage, null)
+      this.state.is_open_now && this.state.updateComments && _react2.default.createElement(PostInfo, { place: this.state.place.jsonBody }) || _react2.default.createElement(SorryMessage, null)
     );
   }
 });
@@ -20659,13 +20669,15 @@ var PostInfo = React.createClass({
               React.createElement(
                 'strong',
                 null,
-                comment.userName
+                comment.userName,
+                ' | ',
+                comment.rating
               )
             ),
             React.createElement(
               'span',
               { className: 'text-muted text-xs block m-t-xs' },
-              '24 minutes ago'
+              'X minutes ago'
             )
           ),
           React.createElement(
@@ -20673,7 +20685,8 @@ var PostInfo = React.createClass({
             { className: 'm-t-sm' },
             comment.content
           )
-        )
+        ),
+        React.createElement('hr', null)
       );
     });
 

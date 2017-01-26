@@ -1,6 +1,16 @@
 var React = require('react');
 
 var NewCommentForm = React.createClass({
+  getInitialState(){
+    return {
+      rerender: true
+    }
+  },
+
+  forceRerender(){
+    this.setState({rerender: !this.state.rerender});
+  },
+
   render(){
     return (
       <div className="card col-md-8 col-md-offset-2 new-comment">
@@ -21,10 +31,10 @@ var NewCommentForm = React.createClass({
         </div>
         <div className="card-block">
           <div className="form-group">
-            <textarea className="form-control" id="exampleTextarea" rows="3" name="comment"></textarea>
+            <textarea className="form-control" id="exampleTextarea" rows="3" name="comment" isRequired></textarea>
           </div>
         </div>
-        <a href="#" className="btn btn-primary" onClick={()=>{this.props.handlePost()}}>Post comment</a>
+        <a href="#" className="btn btn-primary" onClick={this.props.handlePost}>Post comment</a>
         </form>
       </div>
     );

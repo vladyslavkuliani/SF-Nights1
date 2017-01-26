@@ -12,7 +12,8 @@ var PlacePage = React.createClass({
       gotPlace: false,
       place: null,
       is_open_now: false,
-      newComment: false
+      newComment: false,
+      updateComments: true
     }
   },
 
@@ -36,7 +37,8 @@ var PlacePage = React.createClass({
     var data = $(".feedback-form").serialize();
     data += "&id=" + this.state.place.jsonBody.id;
     $.post('/leavecomment', data, function(response){
-      thisComponent.setState({newComment: false});
+      thisComponent.setState({newComment: false, updateComments: false});
+      thisComponent.setState({updateComments: true});
     });
   },
   // {rating: data.rating, comment: data.comment, id: this.state.place.jsonBody.id}
@@ -62,9 +64,9 @@ var PlacePage = React.createClass({
         <Header/>
         <div className="empty-div"></div>
         <AdditionalNavigation/>
-        {this.state.gotPlace && <PlaceInfo place={this.state.place.jsonBody} leaveComment={this.leaveComment.bind(this)} getPostData={this.getPostData.bind(this)}/>}
+        {this.state.gotPlace && this.state.updateComments && <PlaceInfo isOpenNow={this.state.is_open_now} place={this.state.place.jsonBody} leaveComment={this.leaveComment.bind(this)} getPostData={this.getPostData.bind(this)}/>}
         {this.state.newComment && <NewCommentForm place={this.state.place.jsonBody} handlePost={this.handleOnPostComment.bind(this)}/>}
-        {(this.state.is_open_now && <PostInfo place={this.state.place.jsonBody}/>) || <SorryMessage/>}
+        {(this.state.is_open_now && this.state.updateComments && <PostInfo place={this.state.place.jsonBody}/>) || <SorryMessage/>}
       </div>
     );
   }

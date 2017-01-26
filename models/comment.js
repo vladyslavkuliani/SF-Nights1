@@ -5,6 +5,7 @@ var CommentSchema = Schema({
   content: String,
   userName: String,
   userProfilePic: String,
+  rating: Number,
   userId: {
     type: Schema.Types.ObjectId,
     ref: 'User'

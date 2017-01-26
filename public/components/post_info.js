@@ -34,13 +34,14 @@ var PostInfo = React.createClass({
           </a>
           <div className="m-l-xxl m-b">
             <div>
-              <a href><strong>{comment.userName}</strong></a>
+              <a href><strong>{comment.userName} | {comment.rating}</strong></a>
               <span className="text-muted text-xs block m-t-xs">
-                24 minutes ago
+                X minutes ago
               </span>
             </div>
             <div className="m-t-sm">{comment.content}</div>
           </div>
+          <hr/>
         </div>
       );
     });

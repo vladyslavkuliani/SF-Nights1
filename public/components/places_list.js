@@ -2,7 +2,6 @@ var React = require('react');
 
 let PlacesList = React.createClass({
   triggerMarkerClick(index){
-    console.log(index);
     google.maps.event.trigger(this.props.markers[index], 'click');
   },
 
@@ -53,10 +52,10 @@ let PlacesList = React.createClass({
       var divPlaces = places.map(function(place, index){
         return (
           <div key={place.id} id={place.id} className="place-info row">
-            <img src={place.image_url} className="club-img pull-left" onClick={thisComponent.triggerMarkerClick.bind(thisComponent, index)}/>
+            <img src={place.image_url} className="club-img pull-left" onClick={()=>{thisComponent.triggerMarkerClick(index)}}/>
             <div className="col-md-6 club-name">
               <h4><a href="#" onClick={thisComponent.goToPage.bind(thisComponent, place.id)}>{place.name}</a></h4>
-              <span>Rating tonight: <strong>{posts[index].rating}</strong> | <strong>{posts[index].votes.length}</strong> votes</span>
+              <span className="text-rating">Rating tonight: <strong>{posts[index].rating}</strong> | <strong>{posts[index].votes.length}</strong> votes</span>
               <hr/>
               <div className="place-address"><span>{place.location.display_address[0]} </span><span>{place.location.display_address[1]}</span></div>
             </div>

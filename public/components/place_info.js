@@ -20,8 +20,8 @@ var PlaceInfo = React.createClass({
       <div className="place-info col-md-8 col-md-offset-2">
         <img src={place.image_url} className="place-info-img" />
         <h3>{place.name}</h3>
-        {this.state.gotPost && <span className="rating-tonight">Rating tonight: <strong>{this.state.post.rating}</strong> | <strong>{this.state.post.votes.length}</strong> votes</span>}
-        <button className="btn m-b-xs w-xs btn-dark" onClick={()=>{this.props.leaveComment()}}>Comment</button>
+        {this.props.isOpenNow && this.state.gotPost && <span className="rating-tonight">Rating tonight: <strong>{this.state.post.rating}</strong> | <strong>{this.state.post.votes.length}</strong> votes</span>}
+        {this.props.isOpenNow && <div className="comment-btn"><button className="btn m-b-xs w-xs btn-dark" onClick={()=>{this.props.leaveComment()}}>Comment</button></div>}
       </div>
     );
   }

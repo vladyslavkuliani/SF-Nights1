@@ -105,11 +105,10 @@ app.get("/getyelpdata", function(req,res){
 
     client.search({
       term:'Night clubs',
-      location: 'san francisco, ca',
-      // latitude: currentUserLocation["lat"],
-      // longitude: currentUserLocation["lng"],
+      latitude: currentUserLocation["lat"],
+      longitude: currentUserLocation["lng"],
       radius: 7000,
-      limit:2
+      limit:9
     }).then(response => {
       res.json(response);
     });
@@ -132,14 +131,23 @@ app.post('/findorcreate', function(req,res){
 
   db.Place.findOne({yelp_id: req.body.id}, function(err, foundPlace){
       client.business(req.body.id).then(function(detailedInfoPlace){
+        console.log("DETAILED INFO");
+        console.log(detailedInfoPlace.jsonBody["hours"]);
           if(!foundPlace){
             var newPlace = new db.Place({
               yelp_id: req.body.id,
-              is_open_now: detailedInfoPlace.jsonBody["hours"][0].is_open_now,
               currentPost: null,
               visitors: [],
               posts:[]
             });
+
+            if(typeof detailedInfoPlace.jsonBody["hours"] !== "undefined"){
+              newPlace.is_open_now = detailedInfoPlace.jsonBody["hours"][0].is_open_now;
+            }
+            else{
+              newPlace.is_open_now = false;
+            }
+
             newPlace.save();
 
             var newPost = new db.Post({
@@ -162,6 +170,7 @@ app.post('/findorcreate', function(req,res){
 
       }).catch(e => {
         console.log(e);
+        res.json();
       });
   });
 });
@@ -187,13 +196,16 @@ app.get('/getplace', function(req, res){
 app.post('/leavecomment', function(req, res){
   var newComment = new db.Comment({
     content: req.body.comment,
-    userId: req.session.userId
+    userId: req.session.userId,
+    rating: req.body.rating
   });
   newComment.save();
 
   db.Place.findOne({yelp_id: req.body.id}, function(err, foundPlace){
     db.Post.findOne({_id: foundPlace.currentPost}, function(err, foundPost){
       foundPost.comments.push(newComment._id);
+      foundPost.votes.push(req.body.rating);
+      foundPost.rating = (foundPost.votes.reduce((a,b)=>{return a+b}, 0)/foundPost.votes.length).toFixed(1);
       foundPost.save();
       newComment.postId = foundPost._id;
       newComment.save();
@@ -233,5 +245,12 @@ app.get('/user', function(req, res){
     res.json(user);
   });
 })
+
+//TODO delete if don't need it!!!
+app.get('/allposts', function(req,res){
+  db.Post.find({}, function(err, posts){
+    res.json(posts);
+  });
+});
 
 var server = app.listen(process.env.PORT || 3000)
