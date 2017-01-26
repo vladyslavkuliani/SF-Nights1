@@ -3,9 +3,15 @@ var Schema = mongoose.Schema;
 
 var CommentSchema = Schema({
   content: String,
+  userName: String,
+  userProfilePic: String,
   userId: {
     type: Schema.Types.ObjectId,
     ref: 'User'
+  },
+  postId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Post'
   }
 });
 

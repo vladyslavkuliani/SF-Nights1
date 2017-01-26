@@ -119,32 +119,47 @@ app.get("/getyelpdata", function(req,res){
 });
 
 app.post('/findorcreate', function(req,res){
+
+  function returningNewPlace(place, newPost){
+    res.json({place: place, post: newPost});
+  }
+
+  function returnExistingPlace(place){
+    db.Post.findOne({_id: place.currentPost}, function(err, post){
+      res.json({place: place, post: post});
+    });
+  }
+
   db.Place.findOne({yelp_id: req.body.id}, function(err, foundPlace){
       client.business(req.body.id).then(function(detailedInfoPlace){
           if(!foundPlace){
             var newPlace = new db.Place({
               yelp_id: req.body.id,
               is_open_now: detailedInfoPlace.jsonBody["hours"][0].is_open_now,
-              currentPost: null
+              currentPost: null,
+              visitors: [],
+              posts:[]
             });
             newPlace.save();
 
             var newPost = new db.Post({
                 date: new Date(),
                 rating: 0,
-                placeId: newPlace._id
+                placeId: newPlace._id,
+                comments: []
             });
             newPost.save();
 
             newPlace.currentPost = newPost._id;
             newPlace.save();
-            res.json(newPlace);
+            returningNewPlace(newPlace, newPost);
         }
         else{
           foundPlace.is_open_now = detailedInfoPlace.jsonBody["hours"][0].is_open_now;
           foundPlace.save();
-          res.json(foundPlace);
+          returnExistingPlace(foundPlace);
         }
+
       }).catch(e => {
         console.log(e);
       });
@@ -168,5 +183,55 @@ app.get('/getplace', function(req, res){
       res.json(place);
     });
 });
+
+app.post('/leavecomment', function(req, res){
+  var newComment = new db.Comment({
+    content: req.body.comment,
+    userId: req.session.userId
+  });
+  newComment.save();
+
+  db.Place.findOne({yelp_id: req.body.id}, function(err, foundPlace){
+    db.Post.findOne({_id: foundPlace.currentPost}, function(err, foundPost){
+      foundPost.comments.push(newComment._id);
+      foundPost.save();
+      newComment.postId = foundPost._id;
+      newComment.save();
+    });
+
+    var newUserPlace = new db.UserPlace({
+      date: new Date(),
+      placeId: foundPlace._id,
+      visitorId: req.session.userId
+    });
+    newUserPlace.save();
+    foundPlace.visitors.push(newUserPlace._id);
+    foundPlace.save();
+
+    db.User.findOne({_id: req.session.userId}, function(err, user){
+      user.visitedPlaces.push(newUserPlace._id);
+      user.comments.push(newComment._id);
+      user.save();
+      newComment.userName = user.name;
+      newComment.userProfilePic = user.profilePicture;
+      newComment.save();
+    });
+  });
+
+  res.json(newComment);
+});
+
+app.get("/comment", function(req, res){
+    db.Comment.findOne({_id: req.query.id}, function(err, comment){
+
+      res.json(comment);
+    });
+});
+
+app.get('/user', function(req, res){
+  db.User.findOne({_id: req.query.id}, function(err, user){
+    res.json(user);
+  });
+})
 
 var server = app.listen(process.env.PORT || 3000)

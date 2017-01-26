@@ -2,6 +2,7 @@ var React = require('react');
 
 let PlacesList = React.createClass({
   triggerMarkerClick(index){
+    console.log(index);
     google.maps.event.trigger(this.props.markers[index], 'click');
   },
 
@@ -46,29 +47,30 @@ let PlacesList = React.createClass({
 
   render(){
     var places = this.props.places;
+    var posts = this.props.allPosts;
     var thisComponent = this;
 
-    var divPlaces = places.map(function(place, index){
-      return (
-        <div key={place.id} id={place.id} className="place-info row">
-          <img src={place.image_url} className="club-img pull-left" onClick={thisComponent.triggerMarkerClick.bind(thisComponent, index)}/>
-          <div className="col-md-6 club-name">
-            <h4><a href="#" onClick={thisComponent.goToPage.bind(thisComponent, place.id)}>{place.name}</a></h4>
-            <span>Rating tonight: <strong>{thisComponent.props.currentPost.rating}</strong> | <strong>{thisComponent.props.currentPost.votes.length}</strong> votes</span>
-            <hr/>
-            <div className="place-address"><span>{place.location.display_address[0]} </span><span>{place.location.display_address[1]}</span></div>
-          </div>
-          <div className="col-md-4 yelp-info">
-            <div className="distance"><span className="distance-details">{(place.distance/1000).toFixed(2)} km</span></div>
-            <div className="price">{place.price}</div>
-            <div className="yelp-info-rating">
-              <img src="http://i.imgur.com/dgw2qWS.png" className="yelp-img" />
-              <img src={thisComponent.displayRating(place.rating)} className="yelp-rating" />
+      var divPlaces = places.map(function(place, index){
+        return (
+          <div key={place.id} id={place.id} className="place-info row">
+            <img src={place.image_url} className="club-img pull-left" onClick={thisComponent.triggerMarkerClick.bind(thisComponent, index)}/>
+            <div className="col-md-6 club-name">
+              <h4><a href="#" onClick={thisComponent.goToPage.bind(thisComponent, place.id)}>{place.name}</a></h4>
+              <span>Rating tonight: <strong>{posts[index].rating}</strong> | <strong>{posts[index].votes.length}</strong> votes</span>
+              <hr/>
+              <div className="place-address"><span>{place.location.display_address[0]} </span><span>{place.location.display_address[1]}</span></div>
             </div>
-          </div>
-        </div>)
-    });
-    return <div>{divPlaces}</div>
+            <div className="col-md-4 yelp-info">
+              <div className="distance"><span className="distance-details">{(place.distance/1000).toFixed(2)} km</span></div>
+              <div className="price">{place.price}</div>
+              <div className="yelp-info-rating">
+                <img src="http://i.imgur.com/dgw2qWS.png" className="yelp-img" />
+                <img src={thisComponent.displayRating(place.rating)} className="yelp-rating" />
+              </div>
+            </div>
+          </div>)
+      });
+    return (<div>{divPlaces}</div>);
   }
 });
 

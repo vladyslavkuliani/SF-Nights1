@@ -6,6 +6,12 @@ var PlacesList = require('../../components/places_list.js');
 var map;
 var markers = [];
 
+var nightClubs = [];
+var allPosts = [];
+var currentPost;
+var isCurrentPlaceOpen;
+var content;
+
 function initMap(){
   $.get('/position', function(position){
     map = new google.maps.Map(document.getElementById('map'), {
@@ -21,13 +27,13 @@ function initMap(){
 }
 
 function populateMap() {
-  var nightClubs = [];
-  var currentPost;
-  var isCurrentPlaceOpen;
-  var content;
+  nightClubs = [];
+  allPosts = [];
+  markers = [];
+  var currentPlace;
+  var i = 0;
 
   $.get('/getyelpdata', function(places){
-    console.log(places);
     nightClubs = places.jsonBody.businesses;
     nightClubs.forEach(function(place, index){
       $.ajax({
@@ -37,53 +43,52 @@ function populateMap() {
         dataType: 'json',
         async: true,
         success: function(club){
-          isCurrentPlaceOpen = club.is_open_now;
+          console.log("CLUB");
+          console.log(club.place);
+          isCurrentPlaceOpen = club.place.is_open_now;
+          currentPost = club.post;
+          allPosts.push(currentPost);
+
+
+          content = '<div class="row info-marker"><div class="col-md-9"><h4> '+place.name+'</h4>' +
+          "Tonight's rating: <strong>" + currentPost.rating + "</strong> | <strong>" + currentPost.votes.length +"</strong> votes<br>" +
+          place.location.display_address[0] + ", " + place.location.display_address[1] +
+          '</div>' +
+          '<div class="col-md-3">' + '<div>' +(place.distance/1000).toFixed(2)+ 'km</div>' +
+          '<div>' + place.price +'</div>';
+          if(isCurrentPlaceOpen){
+            content += '<span class="isOpen green-text"><strong>Open<strong></span>'+'</div>' + '</div>';
+          }
+          else{
+            content += '<span class="isOpen red-text"><strong>Closed</strong></span>'+'</div>' + '</div>';
+          }
+
+          var marker = new google.maps.Marker({
+                   position: new google.maps.LatLng(place.coordinates.latitude, place.coordinates.longitude),
+                   map: map
+            });
+
+
+          var infoWindow = new google.maps.InfoWindow({content: content});
+          marker.addListener('click', function(){
+            infoWindow.open(map, marker);
+            window.scrollTo(0, nightClubs.indexOf(place)*116);
+            $('.place-info').css('border', '1px solid #DCDCDC');
+            $('#'+place.id).css('border', '3px solid #00AF33');
+          });
+
+          markers.push(marker);
+
+          if(nightClubs.length===allPosts.length){
+            ReactDOM.render(<PlacesList places={nightClubs} markers={markers} allPosts={allPosts}/>, document.getElementById('places-list'));
+          }
         }
       });
 
-      var marker = new google.maps.Marker({
-               position: new google.maps.LatLng(place.coordinates.latitude, place.coordinates.longitude),
-               map: map
-        });
-
-        $.ajax({
-          method: 'GET',
-          url: '/getpost',
-          data: {clubId: place.id},
-          dataType: 'json',
-          async: false,
-          success: function(post){
-            currentPost = post;
-            console.log(post);
-            content = '<div class="row info-marker"><div class="col-md-9"><h4> '+place.name+'</h4>' +
-            "Tonight's rating: <strong>" + post.rating + "</strong> | <strong>" + post.votes.length +"</strong> votes<br>" +
-            place.location.display_address[0] + ", " + place.location.display_address[1] +
-            '</div>' +
-            '<div class="col-md-3">' + '<div>' +(place.distance/1000).toFixed(2)+ 'km</div>' +
-            '<div>' + place.price +'</div>';
-            if(isCurrentPlaceOpen){
-              content += '<span class="isOpen green-text"><strong>Open<strong></span>'+'</div>' + '</div>';
-            }
-            else{
-              content += '<span class="isOpen red-text"><strong>Closed</strong></span>'+'</div>' + '</div>';
-            }
-          }
-        });
-
-        var infoWindow = new google.maps.InfoWindow({content: content});
-        marker.addListener('click', function(){
-          infoWindow.open(map, marker);
-          window.scrollTo(0, index*112);
-          document.getElementById(place.id);
-          $('.place-info').css('border', '1px solid #DCDCDC');
-          $('#'+place.id).css('border', '3px solid #00AF33');
-        });
-        markers.push(marker);
-      });
-      console.log(nightClubs);
-    ReactDOM.render(<PlacesList places={nightClubs} currentPost={currentPost} markers={markers}/>, document.getElementById('places-list'));
+    });
   });
 }
+
 
 
 initMap();

@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var UserPlaceSchema = Schema({
+  date: Date,
   placeId: {
     type: Schema.Types.ObjectId,
     ref: 'Place'

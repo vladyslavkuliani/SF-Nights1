@@ -8,7 +8,11 @@ var PostSchema = Schema({
   placeId: {
     type: Schema.Types.ObjectId,
     ref: 'Place'
-  }
+  },
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Comment'
+  }]
 });
 
 var Post = mongoose.model('Post', PostSchema);

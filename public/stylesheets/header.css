@@ -119,4 +119,12 @@ body{
 .post-info{
   background: white;
   margin-top: 20px;
+  border: 1px solid #DCDCDC;
+}
+
+.new-comment{
+  background: white;
+  margin-top: 20px;
+  border: 1px solid #DCDCDC;
+  padding: 10px 10px;
 }
