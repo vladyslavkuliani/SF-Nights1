@@ -20350,7 +20350,7 @@ var Header = React.createClass({
         { className: "menu-option", onClick: this.home.bind(this) },
         "Home"
       ),
-      React.createElement(
+      this.props.gotLocationData && React.createElement(
         "div",
         { className: "menu-option", onClick: this.clubsAroundMe.bind(this) },
         "Clubs around me"
@@ -20403,7 +20403,7 @@ var UserProfile = _react2.default.createClass({
     return _react2.default.createElement(
       'div',
       null,
-      _react2.default.createElement(Header, null),
+      _react2.default.createElement(Header, { gotLocationData: this.state.gotLocationData }),
       _react2.default.createElement('div', { className: 'empty-div' }),
       _react2.default.createElement(
         'div',
@@ -20412,8 +20412,7 @@ var UserProfile = _react2.default.createClass({
           'h1',
           null,
           this.props.user.name
-        ),
-        this.state.gotLocationData && _react2.default.createElement(BrowsePlacesLink, null)
+        )
       )
     );
   }

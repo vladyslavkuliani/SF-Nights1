@@ -27,11 +27,10 @@ var UserProfile = React.createClass({
 
     return (
       <div>
-        <Header/>
+        <Header gotLocationData={this.state.gotLocationData}/>
         <div className="empty-div"></div>
         <div className="user-profile">
           <h1>{this.props.user.name}</h1>
-          {this.state.gotLocationData && <BrowsePlacesLink/>}
         </div>
       </div>
     );
