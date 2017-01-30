@@ -9,6 +9,7 @@ var PostSchema = Schema({
     type: Schema.Types.ObjectId,
     ref: 'Place'
   },
+  // TODO: These comments about this post won't be used anywhere else, so you can set this to embedded instead of reference.
   comments: [{
     type: Schema.Types.ObjectId,
     ref: 'Comment'

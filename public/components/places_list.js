@@ -7,6 +7,7 @@ let PlacesList = React.createClass({
 
   displayRating(rating){
     switch (rating) {
+      // TODO: Host your own images. Don't use a 3rd party.
       case 0:
         return "http://i.imgur.com/5ktFDB2.png?1";
         break;

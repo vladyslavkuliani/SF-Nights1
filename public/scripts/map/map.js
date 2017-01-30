@@ -15,12 +15,14 @@ var content;
 function initMap(){
   $.get('/position', function(position){
     map = new google.maps.Map(document.getElementById('map'), {
+      // TODO: extract your lat and lng to variables then pass them in.
       center: {lat: parseFloat(position.lat), lng:parseFloat(position.lng)},
       zoom: 12
     });
     // parseFloat(position.lat) parseFloat(position.lng)
     var infoWindow = new google.maps.InfoWindow({map: map});
-
+    
+    // TODO: extract your lat and lng to variables then pass them in.
     infoWindow.setPosition({lat: parseFloat(position.lat), lng: parseFloat(position.lng)});
     infoWindow.setContent('You are here');
   });
@@ -37,6 +39,7 @@ function populateMap() {
 
   $.get('/getyelpdata', function(places){
     nightClubs = places.jsonBody.businesses;
+    console.log("JUSTIN: ", nightClubs)
     nightClubs.forEach(function(place, index){
       $.ajax({
         method: 'POST',
@@ -103,6 +106,7 @@ initMap();
 ReactDOM.render(<Header />, document.getElementById('header'));
 populateMap();
 
+// TODO: remove unused code from production
 // function populateMap() {
 //   nightClubs = [];
 //   allPosts = [];

@@ -7,7 +7,6 @@ var UserPlaceSchema = Schema({
     type: Schema.Types.ObjectId,
     ref: 'Place'
   },
-
   visitorId: {
     type: Schema.Types.ObjectId,
     ref: 'User'

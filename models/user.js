@@ -9,16 +9,19 @@ var UserSchema = Schema({
   currentCity: String,
   profilePicture: String,
   passwordDigest: String,
+  // TODO: If you are using hte userPlace as a join table, then there is no need to have this in your User model
   visitedPlaces: [{
     type: Schema.Types.ObjectId,
     ref: 'UserPlace'
   }],
+  // TODO: Since a user's comments are thought to be unique and only owned by a single user, wouldn't it make more sense to embed them instead of referencing?
   comments: [{
     type: Schema.Types.ObjectId,
     ref: 'Comment'
   }]
 });
 
+// TODO: rearrange this method to take name, email, dob, and password as one object to make it more compact when calling.
 UserSchema.statics.createSecure = function(name, email, dob, password, callback){
   var UserModel = this;
 
@@ -38,6 +41,7 @@ UserSchema.methods.checkPassword = function(password){
     return bcrypt.compareSync(password, this.passwordDigest);
 }
 
+// TODO: See similar to above @ line 22
 UserSchema.statics.authenticate = function(email, password, callback){
     this.findOne({email:email}, function(err, user){
       if(!user){
